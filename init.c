@@ -19,14 +19,14 @@ void mount_check(
     struct stat info;
 
     if (stat(target, &info) == -1 && errno == ENOENT) {
-        printf("Creating %s\n", target);
+        // printf("Creating %s\n", target);
         if (mkdir(target, 0755) < 0) {
             perror("Creating directory failed");
             exit(1);
         }
     }
 
-    printf("Mounting %s\n", target);
+    // printf("Mounting %s\n", target);
     if (mount(source, target, filesystemtype, mountflags, data) < 0) {
         perror("Mount failed");
         exit(1);
