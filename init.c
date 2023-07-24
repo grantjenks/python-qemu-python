@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 
     sethostname("microvm", sizeof("microvm"));
 
-    execle("/usr/local/bin/python", "/usr/local/bin/python", NULL, default_environment);
+    execle("/usr/local/bin/python", "/usr/local/bin/python", "-q", NULL, default_environment);
     perror("Exec failed");
     return 1;
 }
