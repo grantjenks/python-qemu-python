@@ -1,0 +1,5 @@
+linux-6.1.40*
+qemu-8.0.3*
+init
+*.qcow2
+*.tar
