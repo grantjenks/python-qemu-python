@@ -27,6 +27,7 @@ sudo apt-get install -y libpixman-1-dev
 sudo apt-get install -y libslirp-dev
 sudo apt-get install -y flex
 sudo apt-get install -y libelf-dev
+sudo apt-get install -y libguestfs-tools
 ```
 
 
@@ -63,6 +64,8 @@ gcc -Wall -o init -static init.c
 
 
 ## Image
+
+Reference: https://askubuntu.com/questions/1046828/how-to-run-libguestfs-tools-tools-such-as-virt-make-fs-without-sudo
 
 ```bash
 DOCKER_BUILDKIT=1 docker build -f python.Dockerfile --output "type=tar,dest=python.tar" .
