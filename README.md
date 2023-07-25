@@ -20,6 +20,15 @@ sudo yum install -y libguestfs-tools
 scl enable devtoolset-11 bash
 ```
 
+```bash
+sudo apt-get update -y
+sudo apt-get install -y ninja-build
+sudo apt-get install -y libpixman-1-dev
+sudo apt-get install -y libslirp-dev
+sudo apt-get install -y flex
+sudo apt-get install -y libelf-dev
+```
+
 
 ## Qemu
 
@@ -28,21 +37,21 @@ wget https://download.qemu.org/qemu-8.0.3.tar.xz
 tar xJf qemu-8.0.3.tar.xz
 cd qemu-8.0.3/
 ./configure
-make -j32 qemu-system-x86_64
-make -j32 qemu-image
+make -j16 qemu-system-x86_64
+make -j16 qemu-img
 ```
 
 
 ## Linux
 
 ```bash
-wget https://mergeboard.com/files/blog/qemu-microvm/defconfig
+# wget https://mergeboard.com/files/blog/qemu-microvm/defconfig
 wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.40.tar.xz
 tar -xf linux-6.1.40.tar.xz 
 cd linux-6.1.40/
 cp ../defconfig .config
 make olddefconfig
-make -j32
+make -j16
 ```
 
 
