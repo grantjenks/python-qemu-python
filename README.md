@@ -40,6 +40,7 @@ cd qemu-8.0.3/
 ./configure
 make -j16 qemu-system-x86_64
 make -j16 qemu-img
+cd ..
 ```
 
 
@@ -53,6 +54,10 @@ cd linux-6.1.40/
 cp ../defconfig .config
 make olddefconfig
 make -j16
+make modules
+mkdir build
+make modules_install INSTALL_MOD_PATH=build
+cd ..
 ```
 
 
@@ -69,7 +74,7 @@ Reference: https://askubuntu.com/questions/1046828/how-to-run-libguestfs-tools-t
 
 ```bash
 DOCKER_BUILDKIT=1 docker build -f python.Dockerfile --output "type=tar,dest=python.tar" .
-virt-make-fs --format=qcow2 --size=+200M python.tar python-large.qcow2
+SUPERMIN_KERNEL=linux-6.1.40/arch/x86/boot/bzImage SUPERMIN_MODULES=linux-6.1.40/build/lib/modules/6.1.40 virt-make-fs --format=qcow2 --size=+100M python.tar python-large.qcow2
 ./qemu-8.0.3/build/qemu-img convert python-large.qcow2 -O qcow2 python.qcow2
 ./qemu-8.0.3/build/qemu-img create -f qcow2 -b python.qcow2 -F qcow2 python-diff.qcow2
 ./qemu-8.0.3/build/qemu-system-x86_64 -M microvm,x-option-roms=off,isa-serial=off,rtc=off -machine acpi=off -enable-kvm -cpu host -nodefaults -no-user-config -nographic -no-reboot -device virtio-serial-device -chardev stdio,id=virtiocon0 -device virtconsole,chardev=virtiocon0 -drive id=root,file=python-diff.qcow2,format=qcow2,if=none -device virtio-blk-device,drive=root -kernel linux-6.1.40/arch/x86/boot/bzImage -append "console=hvc0 root=/dev/vda rw acpi=off reboot=t panic=-1 quiet" -m 512 -smp 2 -L ./qemu-8.0.3/pc-bios/
