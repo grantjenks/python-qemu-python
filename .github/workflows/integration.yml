@@ -16,7 +16,7 @@ jobs:
       run: gcc -Wall -o init -static init.c
 
     - name: Build Dockerfile as VM image
-      run: docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --privileged -v $PWD:/d2vm -w /d2vm linkacloud/d2vm:latest build --file python.Dockerfile --output python.qcow2 .
+      run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --privileged -v $PWD:/d2vm -w /d2vm linkacloud/d2vm:latest build --file python.Dockerfile --output python.qcow2 .
 
     - name: Upload image
       uses: actions/upload-artifact@v4
