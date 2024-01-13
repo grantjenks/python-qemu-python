@@ -9,20 +9,20 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Pull Docker Image
-      run: docker pull linkacloud/d2vm:latest
+    # - name: Pull Docker Image
+    #   run: docker pull linkacloud/d2vm:latest
 
-    - name: Compile init
-      run: gcc -Wall -o init -static init.c
+    # - name: Compile init
+    #   run: gcc -Wall -o init -static init.c
 
-    - name: Build Dockerfile as VM image
-      run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --privileged -v $PWD:/d2vm -w /d2vm linkacloud/d2vm:latest build --file python.Dockerfile --output python.qcow2 .
+    # - name: Build Dockerfile as VM image
+    #   run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --privileged -v $PWD:/d2vm -w /d2vm linkacloud/d2vm:latest build --file python.Dockerfile --output python.qcow2 .
 
-    - name: Upload image
-      uses: actions/upload-artifact@v4
-      with:
-        name: python.qcow2
-        path: python.qcow2
+    # - name: Upload image
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: python.qcow2
+    #     path: python.qcow2
 
     - name: Update OS
       run: sudo apt-get update -y
@@ -34,14 +34,14 @@ jobs:
     - run: sudo apt-get install -y libelf-dev
     - run: sudo apt-get install -y libguestfs-tools
 
-    - run: wget https://download.qemu.org/qemu-8.2.0.tar.xz
-    - run: tar xJf qemu-8.2.0.tar.xz
-    - run: cd qemu-8.2.0 && ./configure
-    - run: cd qemu-8.2.0 && make -j qemu-system-x86_64
-    - run: cd qemu-8.2.0 && make -j qemu-img
+    # - run: wget https://download.qemu.org/qemu-8.2.0.tar.xz
+    # - run: tar xJf qemu-8.2.0.tar.xz
+    # - run: cd qemu-8.2.0 && ./configure
+    # - run: cd qemu-8.2.0 && make -j qemu-system-x86_64
+    # - run: cd qemu-8.2.0 && make -j qemu-img
 
-    - run: wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.40.tar.xz
-    - run: tar -xf linux-6.1.40.tar.xz
-    - run: cp defconfig linux-6.1.40/.config
-    - run: cd linux-6.1.40 && make olddefconfig
-    - run: cd linux-6.1.40 && make -j
+    - run: wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.15.146.tar.xz
+    - run: tar -xf linux-5.15.146.tar.xz
+    - run: cp defconfig linux-5.15.146/.config
+    - run: cd linux-5.15.146 && make olddefconfig
+    - run: cd linux-5.15.146 && make -j
