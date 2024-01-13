@@ -1,0 +1,12 @@
+name: integration
+
+on: [push, pull_request]
+
+jobs:
+
+  build:
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Hello
+      run: echo Hello World
