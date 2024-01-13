@@ -23,3 +23,25 @@ jobs:
       with:
         name: python.qcow2
         path: python.qcow2
+
+    - name: Update OS
+      run: sudo apt-get update -y
+
+    - run: sudo apt-get install -y ninja-build
+    - run: sudo apt-get install -y libpixman-1-dev
+    - run: sudo apt-get install -y libslirp-dev
+    - run: sudo apt-get install -y flex
+    - run: sudo apt-get install -y libelf-dev
+    - run: sudo apt-get install -y libguestfs-tools
+
+    - run: wget https://download.qemu.org/qemu-8.2.0.tar.xz
+    - run: tar xJf qemu-8.2.0.tar.xz
+    - run: cd qemu-8.2.0 && ./configure
+    - run: cd qemu-8.2.0 && make -j qemu-system-x86_64
+    - run: cd qemu-8.2.0 && make -j qemu-img
+
+    - run: wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.1.40.tar.xz
+    - run: tar -xf linux-6.1.40.tar.xz
+    - run: cp defconfig linux-6.1.40/.config
+    - run: cd linux-6.1.40 && make olddefconfig
+    - run: cd linux-6.1.40 && make -j
