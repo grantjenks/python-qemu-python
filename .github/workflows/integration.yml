@@ -25,51 +25,62 @@ jobs:
     - run: cd linux-5.15.146 && make olddefconfig
     - run: cd linux-5.15.146 && make
 
-    # - name: Pull Docker Image
-    #   run: docker pull linkacloud/d2vm:latest
+    - name: Upload Linux kernel bzImage
+      uses: actions/upload-artifact@v4
+      with:
+        name: bzImage
+        path: linux-5.15.146/arch/x86/boot/bzImage
 
-    # - name: Compile init
-    #   run: gcc -Wall -o init -static init.c
+    - name: Pull Docker Image
+      run: docker pull linkacloud/d2vm:latest
 
-    # - name: Build Dockerfile as VM image
-    #   run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --privileged -v $PWD:/d2vm -w /d2vm linkacloud/d2vm:latest build --file python.Dockerfile --output python-large.qcow2 .
+    - name: Compile init
+      run: gcc -Wall -o init -static init.c
 
-    # - name: Upload python-large.qcow2
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: python-large.qcow2
-    #     path: python-large.qcow2
+    - name: Build Dockerfile as VM image
+      run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock --privileged -v $PWD:/d2vm -w /d2vm linkacloud/d2vm:latest build --file python.Dockerfile --output python-large.qcow2 .
 
-    # - run: wget https://download.qemu.org/qemu-8.2.0.tar.xz
-    # - run: tar xJf qemu-8.2.0.tar.xz
-    # - run: cd qemu-8.2.0 && ./configure
-    # - run: cd qemu-8.2.0 && make -j qemu-system-x86_64
-    # - run: cd qemu-8.2.0 && make -j qemu-img
+    - name: Upload python-large.qcow2
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-large.qcow2
+        path: python-large.qcow2
 
-    # - name: Upload qemu-system-x86_64
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: qemu-system-x86_64
-    #     path: qemu-system-x86_64
+    - run: wget https://download.qemu.org/qemu-8.2.0.tar.xz
+    - run: tar xJf qemu-8.2.0.tar.xz
+    - run: cd qemu-8.2.0 && ./configure
+    - run: cd qemu-8.2.0 && make -j qemu-system-x86_64
+    - run: cd qemu-8.2.0 && make -j qemu-img
 
-    # - run: qemu-8.2.0/build/qemu-img convert python-large.qcow2 -O qcow2 python.qcow2
-    # - name: Upload python.qcow2
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: python.qcow2
-    #     path: python.qcow2
+    - name: Upload qemu-system-x86_64
+      uses: actions/upload-artifact@v4
+      with:
+        name: qemu-system-x86_64
+        path: qemu-system-x86_64
 
-    # - run: qemu-8.2.0/build/qemu-img create -f qcow2 -b python.qcow2 -F qcow2 python-diff.qcow2
+    - run: qemu-8.2.0/build/qemu-img convert python-large.qcow2 -O qcow2 python.qcow2
+    - name: Upload python.qcow2
+      uses: actions/upload-artifact@v4
+      with:
+        name: python.qcow2
+        path: python.qcow2
 
-    # - name: Upload python-diff.qcow2
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: python-diff.qcow2
-    #     path: python-diff.qcow2
+    - run: qemu-8.2.0/build/qemu-img create -f qcow2 -b python.qcow2 -F qcow2 python-diff.qcow2
+
+    - name: Upload python-diff.qcow2
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-diff.qcow2
+        path: python-diff.qcow2
 
   test:
+    needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
-    # - run: ./qemu-8.2.0/build/qemu-system-x86_64 -M microvm,x-option-roms=off,isa-serial=off,rtc=off -machine acpi=off -enable-kvm -cpu host -nodefaults -no-user-config -nographic -no-reboot -device virtio-serial-device -chardev stdio,id=virtiocon0 -device virtconsole,chardev=virtiocon0 -drive id=root,file=python-diff.qcow2,format=qcow2,if=none -device virtio-blk-device,drive=root -kernel linux-6.1.40/arch/x86/boot/bzImage -append "console=hvc0 root=/dev/vda rw acpi=off reboot=t panic=-1 quiet" -m 512 -smp 2 -L ./qemu-8.2.0/pc-bios/
+    - uses: actions/download-artifact@v4
+
+    - run: ./qemu-8.2.0/build/qemu-system-x86_64 -M microvm,x-option-roms=off,isa-serial=off,rtc=off -machine acpi=off -nodefaults -no-user-config -nographic -no-reboot -device virtio-serial-device -chardev stdio,id=virtiocon0 -device virtconsole,chardev=virtiocon0 -drive id=root,file=python-diff.qcow2,format=qcow2,if=none -device virtio-blk-device,drive=root -kernel bzImage -append "console=hvc0 root=/dev/vda rw acpi=off reboot=t panic=-1 quiet" -m 512 -smp 2
+      # -enable-kvm -cpu host
+      # -L ./qemu-8.2.0/pc-bios/
