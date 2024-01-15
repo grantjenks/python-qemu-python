@@ -48,6 +48,13 @@ jobs:
 
     - run: wget https://download.qemu.org/qemu-8.2.0.tar.xz
     - run: tar xJf qemu-8.2.0.tar.xz
+
+    - name: Upload qboot.rom
+      uses: actions/upload-artifact@v4
+      with:
+        name: qboot.rom
+        path: qemu-8.2.0/pc-bios/qboot.rom
+
     - run: cd qemu-8.2.0 && ./configure
     - run: cd qemu-8.2.0 && make -j qemu-system-x86_64
     - run: cd qemu-8.2.0 && make -j qemu-img
@@ -89,8 +96,8 @@ jobs:
         mv artifacts/python-diff.qcow2 ./
         mv artifacts/python.qcow2 ./
         mv artifacts/qemu-system-x86_64 ./
+        mv artifacts/qboot.rom ./
         chmod +x qemu-system-x86_64
 
-    - run: ./qemu-system-x86_64 -M microvm,x-option-roms=off,isa-serial=off,rtc=off -machine acpi=off -nodefaults -no-user-config -nographic -no-reboot -device virtio-serial-device -chardev stdio,id=virtiocon0 -device virtconsole,chardev=virtiocon0 -drive id=root,file=python-diff.qcow2,format=qcow2,if=none -device virtio-blk-device,drive=root -kernel bzImage -append "console=hvc0 root=/dev/vda rw acpi=off reboot=t panic=-1 quiet" -m 512 -smp 2
+    - run: ./qemu-system-x86_64 -M microvm,x-option-roms=off,isa-serial=off,rtc=off -machine acpi=off -nodefaults -no-user-config -nographic -no-reboot -device virtio-serial-device -chardev stdio,id=virtiocon0 -device virtconsole,chardev=virtiocon0 -drive id=root,file=python-diff.qcow2,format=qcow2,if=none -device virtio-blk-device,drive=root -kernel bzImage -append "console=hvc0 root=/dev/vda rw acpi=off reboot=t panic=-1 quiet" -m 512 -smp 2 -L qboot.rom
       # -enable-kvm -cpu host
-      # -L ./qemu-8.2.0/pc-bios/
